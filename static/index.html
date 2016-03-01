@@ -34,6 +34,7 @@ var context = canvas.getContext("2d");
 var W = canvas.width  = window.innerWidth-6;
 var H = canvas.height = window.innerHeight-50;
 myColour = getMyColour(); // unique
+myColourX = getMyColour(); // unique
 myRadius = getMyRadius(); // unique
 //window.onload=function(myColour){ myColour = getMyColour(); console.log(myColour)}
 // JS version
@@ -304,16 +305,16 @@ mouse.mousedraggers.push(function(x,y,clicked,e) {
 });
 
 function getMyColour(){
-  var tokens = ('0123456789ABCDEF'.split(''));
+  // http://stackoverflow.com/questions/1484506/random-color-generator-in-javascript#1484514
   var col = '#';
   for(var i=0; i<6; i++){
-    col+=tokens[ Math.floor(Math.random() * 16)];
+    col+=(('0123456789ABCDEF'.split(''))[ Math.floor(Math.random() * 16)]);
   }
   return col;
 }
 
 function getMyRadius(){
-  return Math.ceil(Math.random() * 20);
+  return 2*(Math.ceil(Math.random()*10));
 }
 
 function update() {
