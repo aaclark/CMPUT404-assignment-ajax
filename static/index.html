@@ -33,7 +33,9 @@ var host = window.location.host;
 var context = canvas.getContext("2d");
 var W = canvas.width  = window.innerWidth-6;
 var H = canvas.height = window.innerHeight-50;
-
+myColour = getMyColour(); // unique
+myRadius = getMyRadius(); // unique
+//window.onload=function(myColour){ myColour = getMyColour(); console.log(myColour)}
 // JS version
 function sendJSONXMLHTTPRequest(url, objects, callback) {
     var xhr = new XMLHttpRequest();
@@ -107,8 +109,12 @@ function prepEntity(entity) {
         entity["colour"] = "#FF0000";
     }
     if (!entity["radius"]) {
-        entity["radius"] = 50;
+        entity["radius"] = 10;
     }
+    /*
+    if (!entity["stroke"]) {
+        entity["stroke"] = 4;
+    }*/
     return entity;
 }
 
@@ -127,6 +133,7 @@ function renderFrame() {
     for (var key in world) {
         var entity = world[key];
         drawCircle(context,prepEntity(entity));
+        //drawLine(context,prepEntity(entity));
     }
 }
 
@@ -276,29 +283,50 @@ mouse = (function() {
 })();
 
 // Add the application specific mouse listeners!
-//XXX: TODO Make these prettier!
 mouse.mousedowners.push(function(x,y,clicked,e) {
-    addEntityWithoutName({'x':x,'y':y,'colour':'blue'});
+    //addEntityWithoutName({'x':x,'y':y,'colour':'blue'});
+    addEntityWithoutName({'x':x,'y':y,
+                          'colour':myColour,
+                          'radius':myRadius*0.5});
 });
 
 mouse.mouseuppers.push(function(x,y,clicked,e) {
-    addEntityWithoutName({'x':x,'y':y,'colour':'red'});
+    //addEntityWithoutName({'x':x,'y':y,'colour':'red'});
+    addEntityWithoutName({'x':x,'y':y,
+                          'colour':myColour,
+                          'radius':myRadius*0.5});
 });
 
 mouse.mousedraggers.push(function(x,y,clicked,e) {
-    addEntityWithoutName({'x':x,'y':y,'colour':'green',
-                          'radius':10});
+    addEntityWithoutName({'x':x,'y':y,
+                          'colour':myColour,
+                          'radius':myRadius});
 });
 
+function getMyColour(){
+  var tokens = ('0123456789ABCDEF'.split(''));
+  var col = '#';
+  for(var i=0; i<6; i++){
+    col+=tokens[ Math.floor(Math.random() * 16)];
+  }
+  return col;
+}
+
+function getMyRadius(){
+  return Math.ceil(Math.random() * 20);
+}
 
 function update() {
     //XXX: TODO Get the world from the webservice using a XMLHTTPRequest
-    sendJSONXMLHTTPRequest("/world", null, function(f){
+    if( true ){
+      //sendJSONXMLHTTPRequest("/entity/"+entity, data, null);
       try{
-        world = f;
-        drawNextFrame();
+        sendJSONXMLHTTPRequest("/world", null, function(f){
+          world = f;
+          drawNextFrame();
+        });
       }catch(e){ /*handling*/ }
-    });
+    }
     drawFrame();
 }
 
